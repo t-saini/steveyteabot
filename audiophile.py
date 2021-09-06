@@ -20,6 +20,8 @@ class AudiophileGear:
             self.url = 'https://crinacle.com/rankings/headphones/'
         self.premature = None #will hold initial pull from website, and will hold modifications
         self.results = None #will hold the soon to be outputed results
+        self.total_characters = 0
+
     def gear_search(self):
         '''Use pandas library to pull table from website '''
         #nifty pandas function that will find a table on a website and store it as text
@@ -49,11 +51,35 @@ class AudiophileGear:
             #if the price is set use it and make self.results that
             self.results = self.results.loc[self.results['Price (MSRP)'] <= self.price]
             self.results = self.results[self.results['Price (MSRP)'] != 0]
+            self.results = self.results[~self.results['Price (MSRP)']<= self.price-200]
         if self.top != None:
             #if the number of results are specified show that
             self.results = self.results.head(self.top)
-        return self.results
-
+        pd.set_option('display.width', None)
+    
+    def print_results(self):
+        #function will break down pandas DF and print per line
+        #store items of interest in lists
+        self.results = self.results.sort_values(by=['Price (MSRP)'],ascending=False)
+        ranks = list(self.results['Rank'].head(10))
+        model = list(self.results['Model'].head(10))
+        price = list(self.results['Price (MSRP)'].head(10))
+        comments = list(self.results['Comments'].head(10))
+        results = []
+        #itterate through the list and append found items
+        for index in range(len(ranks)):
+            statement = f'Priced at ${price[index]} and ranked {ranks[index]} the *{model[index]}*, {comments[index]}'
+            results.append(statement)
+        #return results as jointed list if the length of results is greater than 0    
+        if len(results) > 0:
+            output = '\n'.join(list(filter(None, results)))
+            found = f'Hullo check it 😎🐱‍💻 \n {output}'
+            return found
+        #otherwise let the people know you found nothing in a spunky fashion.
+        else:
+            nothing = 'I found nothing 😛🐱‍💻'
+            return nothing
+        
 def main():
     start = AudiophileGear('iems', 200, None)
     start.gear_search()
