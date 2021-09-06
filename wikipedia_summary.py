@@ -10,6 +10,7 @@ class WikipediaSummary:
 
     def __init__(self, term):
         self.term = term
+        self.domain = 'https://en.wikipedia.org/wiki/'
 
     def lookup(self):
         #returns summary of search item and limits it to 5 sentences
@@ -21,7 +22,13 @@ class WikipediaSummary:
 
     def pagelookup(self):
         #returns link to page
-        return wiki.page(self.term).url
+        #as of 2021 .url does not return the correct search result
+        #concatinating the url manually is a fix for now.
+        try:
+            return self.domain + self.term.replace(' ','_')
+        except Exception as ex:
+            print(f'Sorry there was an error, here it is:\n {ex}')
+        #return wiki.page(self.term).url
 
 
 def main():
@@ -49,4 +56,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
