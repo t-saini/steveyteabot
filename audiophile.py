@@ -61,10 +61,17 @@ class AudiophileGear:
         #function will break down pandas DF and print per line
         #store items of interest in lists
         self.results = self.results.sort_values(by=['Price (MSRP)'],ascending=False)
+<<<<<<< HEAD
         ranks = list(self.results['Rank'].head(5))
         model = list(self.results['Model'].head(5))
         price = list(self.results['Price (MSRP)'].head(5))
         comments = list(self.results['Comments'].head(5))
+=======
+        ranks = list(self.results['Rank'].head(10))
+        model = list(self.results['Model'].head(10))
+        price = list(self.results['Price (MSRP)'].head(10))
+        comments = list(self.results['Comments'].head(10))
+>>>>>>> df819ba16bac35b73596ac39b66ed227b22c533b
         results = []
         #itterate through the list and append found items
         for index in range(len(ranks)):
@@ -73,11 +80,19 @@ class AudiophileGear:
         #return results as jointed list if the length of results is greater than 0    
         if len(results) > 0:
             output = '\n'.join(list(filter(None, results)))
+<<<<<<< HEAD
             found = f'Hullo check it 😎 \n {output}'
             return found
         #otherwise let the people know you found nothing in a spunky fashion.
         else:
             nothing = 'I found nothing 😛'
+=======
+            found = f'Hullo check it 😎🐱‍💻 \n {output}'
+            return found
+        #otherwise let the people know you found nothing in a spunky fashion.
+        else:
+            nothing = 'I found nothing 😛🐱‍💻'
+>>>>>>> df819ba16bac35b73596ac39b66ed227b22c533b
             return nothing
         
 def main():
