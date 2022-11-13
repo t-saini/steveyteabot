@@ -1,6 +1,6 @@
 #bot.py
 #https://betterprogramming.pub/coding-a-discord-bot-with-python-64da9d6cade7
-#https://discord.com/api/oauth2/authorize?client_id=870489969574150194&permissions=259846011968&scope=bot
+
 
 import discord
 import random
@@ -18,7 +18,7 @@ Main script for SteveyTea Bot. Uses wikipedia_summary, slickdeals, and audiophil
 Discord library has the API, dotenv is needed to pull Discord_Token from .env file.
 '''
 
-DISCORD_TOKEN = "ODcwNDg5OTY5NTc0MTUwMTk0.YQNg9Q.HwHY1RyDKacPJlCsFBoG--iYZYE"
+DISCORD_TOKEN = ""
 intents = discord.Intents.default()
 intents.members = True
 
@@ -31,7 +31,7 @@ def style_check(current_articles):
     3: 'Best dressed incoming', 4:'I like my money right where I can see it: hanging in my closet.',
     5:'If you can’t be better than your competition, just dress better.',
     6:'Buy less, choose well.' }
-    channels_to_msg = [870491733719408653, 900612816145350668, 815984259839033346]
+    channels_to_msg = []
     for single_channel in channels_to_msg:
         for article in current_articles:
             dev_channel = bot.get_channel(single_channel)
@@ -45,7 +45,7 @@ def posh_check():
         new_truth = pull_posh.find_posh()
         if ground_truth != new_truth:
             new_listings = list(set(new_truth).difference(set(ground_truth)))
-            dev_channel = bot.get_channel(900612816145350668)
+            dev_channel = bot.get_channel()
             for listing in new_listings:
                 bot.loop.create_task(dev_channel.send(f'{listing}'))
             ground_truth = new_truth
