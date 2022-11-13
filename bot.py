@@ -2,46 +2,63 @@
 #https://betterprogramming.pub/coding-a-discord-bot-with-python-64da9d6cade7
 #https://discord.com/api/oauth2/authorize?client_id=870489969574150194&permissions=259846011968&scope=bot
 
-import os
-from dotenv import load_dotenv
 import discord
 import random
 import wikipedia_summary as wiki
 import slickdeals as slick
 import audiophile
+import pull_dapper
+import threading
+import time
+import datetime
+import pull_posh
 
 '''
 Main script for SteveyTea Bot. Uses wikipedia_summary, slickdeals, and audiophile imports for primary actions.
 Discord library has the API, dotenv is needed to pull Discord_Token from .env file.
 '''
 
-load_dotenv('.env')
-
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+DISCORD_TOKEN = "ODcwNDg5OTY5NTc0MTUwMTk0.YQNg9Q.HwHY1RyDKacPJlCsFBoG--iYZYE"
 intents = discord.Intents.default()
 intents.members = True
 
 bot = discord.Client()
 
-@bot.event
-async def on_ready():
-    #on connection
-    guild_count = 0
-    for guild in bot.guilds:
-        #itterate through the number of servers/guilds that have gained access through the Auth2link
-        print(f'Connected-{guild.id} (name:{guild.name})')
-        #print the name and guild id and add one to the counter
-        guild_count = guild_count + 1
-        #print a message showing the total number of servers connected. Ths can be useful in the future if multiple amount of servers will be used.
-    print(f'Bee Boop Bop Beep, SteveyTea is in, connected to {guild_count} servers, how neat.')
+def style_check(current_articles):
+    quips = {0:'Found some fresh fits at a fair price',
+    1:'Who said lookin\' good has to be pricey', 
+    2:'Comin\' in hot with some new threads', 
+    3: 'Best dressed incoming', 4:'I like my money right where I can see it: hanging in my closet.',
+    5:'If you can’t be better than your competition, just dress better.',
+    6:'Buy less, choose well.' }
+    channels_to_msg = [870491733719408653, 900612816145350668, 815984259839033346]
+    for single_channel in channels_to_msg:
+        for article in current_articles:
+            dev_channel = bot.get_channel(single_channel)
+            selected = random.randrange(len(quips))
+            bot.loop.create_task(dev_channel.send(f'{quips[selected]}\n{article}'))
 
+def posh_check():
+    ground_truth = pull_posh.find_posh()
+    while True:
+        time.sleep(1800)
+        new_truth = pull_posh.find_posh()
+        if ground_truth != new_truth:
+            new_listings = list(set(new_truth).difference(set(ground_truth)))
+            dev_channel = bot.get_channel(900612816145350668)
+            for listing in new_listings:
+                bot.loop.create_task(dev_channel.send(f'{listing}'))
+            ground_truth = new_truth
+        
+            
 
-
-@bot.event
 async def on_message(message):
     '''on_message was used for simplifying user experience in discord chat. Function contains full little quips for the bot and core functions'''
     welcome_messages = {0: 'H U L L O', 1: 'Hullo, anyone want tea?🐱‍👓', 2:'Yo I\'m trying to sleep', 3:'Where my brown bear at?'}
-    tangisms = {0: 'expensive hot tea leaf juice...add black balls and asians will love you', 1: 'Yo I\'m trying to sleep', 2: 'you do be lookin kinda cute today' , 3: 'posture check mofucka'}
+    tangisms = {0: 'expensive hot tea leaf juice...add black balls and asians will love you', 1: 'Yo I\'m trying to sleep', 2: 'you do be lookin kinda cute today' , 
+    3: 'posture check mofucka', 4: 'I only speak to himbos', 5:'Sleepy Joe? I am all about Dark Brandon', 
+    6:'I have seen a cautionary reddit tale come to life...anything is possible.', 7:'We have all bore witness to a man get that phat financial SUCC',
+    8:'H U L L O', 9: 'Hullo, anyone want tea?🐱‍👓', 10:'Yo I\'m trying to sleep', 11:'Where my brown bear at?', 12:'Bro I\'m Chinese what do you want from me...'}
     ###Fun quips
     #
     if 'summon steveytea' in message.content.lower():
@@ -110,18 +127,56 @@ async def on_message(message):
             hardware_search = audiophile.AudiophileGear(gear,price,quant)
             hardware_search.gear_search()
             hardware_search.morph_search()
-            hardware_results = hardware_search.filter_search()
+            hardware_search.filter_search()
+            hardware_results = hardware_search.print_results()
             #output with results
-            await message.channel.send(f'Check it 😎 \n {hardware_results}')
-    
+            await message.channel.send(f'{hardware_results}')
     #I lied, more fun quips
-    if '!tea' in message.content.lower():
+    phrase = ['!tea', 'say the thing steveyt', 'say the thing stevey tea', 'say the thing steveytea']
+    if message.content.lower() in phrase:
         if message.author != bot.user:
             selected = random.randrange(len(tangisms))
             await message.channel.send(f'{tangisms[selected]}')
 
     if message.content.lower() == '!help':
-        await message.channel.send('I\'m a simple bot modeled after the great Sleeping Dragon Steven Tang. You can use !wiki for Wikipedia searches and !deals for SlickDeals. !audio [price range] [how many results] to find some audiogear (example: !audio iems 200 5 | !audio headphones 300), Use !tea for some Steven Tangisms 🐱‍👓')
+        await message.channel.send('I\'m a simple bot modeled after the great Sleeping Dragon Steven Tang. You can use !wiki for Wikipedia searches and !deals for SlickDeals. !audio [headphones/iems] [price range] to find some audiogear (example: !audio iems 200 or !audio headphones 300), Use !tea for some Steven Tangisms 🐱‍👓')
+
+
+def dapper_check():
+    latest_article = pull_dapper.dapper_up()
+    while True:
+        time.sleep(.001)
+        time_now = datetime.datetime.now().strftime("%H:%M")
+        time_to_work = ['09:15','12:30','15:30','18:30']
+        if time_now in time_to_work:
+            current_article = pull_dapper.dapper_up()
+            if current_article != latest_article:
+                to_check = [style for style in current_article if style not in latest_article]
+                style_check(to_check)
+                latest_article = current_article
+
+@bot.event
+async def on_ready():
+    #on connection
+    guild_count = 0
+    for guild in bot.guilds:
+        #itterate through the number of servers/guilds that have gained access through the Auth2link
+        print(f'Connected-{guild.id} (name:{guild.name})')
+        #print the name and guild id and add one to the counter
+        guild_count = guild_count + 1
+        #print a message showing the total number of servers connected. Ths can be useful in the future if multiple amount of servers will be used.
+    print(f'Bee Boop Bop Beep, SteveyTea is in, connected to {guild_count} servers, how neat.')
+    t1 = threading.Thread(target = dapper_check)
+    t2 = threading.Thread(target = posh_check)
+    t1.setDaemon(True)
+    t2.setDaemon(True)
+    t1.start()
+    t2.start()
+    while True:
+        time.sleep(.001)
+        msg = await bot.wait_for("message")
+        await on_message(msg)
+
 
 
 #establishes connection

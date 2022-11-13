@@ -40,7 +40,7 @@ class SlickSearch:
         self.results = soup.find('div', {'data-module-name': 'Search Results'})
         #pull the results
         self.results = self.results.find_all('div', {'class': 'resultRow'})
-        
+
     def gen_deals(self):
         for results in self.results:
             anchor = results.find('a', {'class': 'dealTitle'})
@@ -52,10 +52,11 @@ class SlickSearch:
             self.deals['Info'].append(f'{rating} {expired}')
 
     def display_deals(self):
+        pd.set_option('display.width', None)
         dataframe = pd.DataFrame.from_dict(self.deals, orient='columns')
         #top 5 deals should be enough
         #discord limits tabulation in messages, to_markdown attempts to make these messages nicer looking
-        return dataframe.head(5).to_markdown()
+        return dataframe.head(5)
 
     def full_url(self):
         return self.url
