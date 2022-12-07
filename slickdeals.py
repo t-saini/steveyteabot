@@ -52,11 +52,11 @@ class SlickSearch:
             self.deals['Info'].append(f'{rating} {expired}')
 
     def display_deals(self):
-        pd.set_option('display.width', None)
         dataframe = pd.DataFrame.from_dict(self.deals, orient='columns')
         #top 5 deals should be enough
         #discord limits tabulation in messages, to_markdown attempts to make these messages nicer looking
-        return dataframe.head(5)
+        top_five = dataframe[['Product','Price','Link']].head(5)
+        return top_five
 
     def full_url(self):
         return self.url
