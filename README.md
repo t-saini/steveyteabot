@@ -3,12 +3,12 @@ Discord bot built with Python to fetch information inputted by users regarding h
 
 File hierarchy:
 
-bot.py
-|_ utility.py
-|_ web_scanning.py
-|_ bot_interactions.py
-    |_ audiophile.py
-    |_ slickdeals.py
+bot.py<br />
+|_ utility.py<br />
+|_ web_scanning.py<br />
+|_ bot_interactions.py<br />
+&emsp;|_ audiophile.py
+&emsp;|_ slickdeals.py
 
 
 Requirements:
