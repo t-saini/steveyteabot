@@ -26,6 +26,7 @@ class AudiophileGear:
         '''Use pandas library to pull table from website '''
         #nifty pandas function that will find a table on a website and store it as text
         #it is initially stored in a list, that is why there is a [0] at the end of the return
+        #future iteration should move away from this since its stupid slow!
         self.premature = pd.read_html(requests.get(self.url).text)[0]
 
     def morph_search(self):
@@ -34,10 +35,17 @@ class AudiophileGear:
         self.premature = self.premature[['Rank','Model','Price (MSRP)','Comments']]
         #Drop all C-F tier audio equipment
         #
-        self.premature = self.premature[~self.premature['Rank'].str.contains('C')]
-        self.premature = self.premature[~self.premature['Rank'].str.contains('D')]
-        self.premature = self.premature[~self.premature['Rank'].str.contains('E')]
-        self.premature = self.premature[~self.premature['Rank'].str.contains('F')]
+        self.premature = pd.concat([self.premature[self.premature['Rank'].str.contains('S')],
+        self.premature[self.premature['Rank'].str.contains('A')],
+        self.premature[self.premature['Rank'].str.contains('B')]
+        ])
+        # self.premature[(self.premature['Rank'].str.contains('S')) & 
+        # (self.premature['Rank'].str.contains('A')) & 
+        # (self.premature['Rank'].str.contains('B'))]
+        # self.premature = self.premature[~self.premature['Rank'].str.contains('C')]
+        # self.premature = self.premature[~self.premature['Rank'].str.contains('D')]
+        # self.premature = self.premature[~self.premature['Rank'].str.contains('E')]
+        # self.premature = self.premature[~self.premature['Rank'].str.contains('F')]
         #
         #remove any letters or question marks in the price section and replace with 0
         self.premature['Price (MSRP)'] = self.premature['Price (MSRP)'].replace(regex='([?a-zA-Z])', value = 0)
@@ -49,9 +57,10 @@ class AudiophileGear:
         self.results = self.premature
         if self.price != None:
             #if the price is set use it and make self.results that
-            self.results = self.results.loc[self.results['Price (MSRP)'] <= self.price]
-            self.results = self.results[self.results['Price (MSRP)'] != 0]
-            self.results = self.results[~self.results['Price (MSRP)']<= self.price-200]
+            # self.results = self.results.loc[self.results['Price (MSRP)'] <= self.price]
+            # self.results = self.results[self.results['Price (MSRP)'] != 0]
+            # self.results = self.results[~self.results['Price (MSRP)']<= self.price-200]
+            self.results = self.results[self.results['Price (MSRP)'] <= self.price]
         if self.top != None:
             #if the number of results are specified show that
             self.results = self.results.head(self.top)
@@ -61,17 +70,10 @@ class AudiophileGear:
         #function will break down pandas DF and print per line
         #store items of interest in lists
         self.results = self.results.sort_values(by=['Price (MSRP)'],ascending=False)
-<<<<<<< HEAD
-        ranks = list(self.results['Rank'].head(5))
-        model = list(self.results['Model'].head(5))
-        price = list(self.results['Price (MSRP)'].head(5))
-        comments = list(self.results['Comments'].head(5))
-=======
         ranks = list(self.results['Rank'].head(10))
         model = list(self.results['Model'].head(10))
         price = list(self.results['Price (MSRP)'].head(10))
         comments = list(self.results['Comments'].head(10))
->>>>>>> df819ba16bac35b73596ac39b66ed227b22c533b
         results = []
         #itterate through the list and append found items
         for index in range(len(ranks)):
@@ -80,19 +82,11 @@ class AudiophileGear:
         #return results as jointed list if the length of results is greater than 0    
         if len(results) > 0:
             output = '\n'.join(list(filter(None, results)))
-<<<<<<< HEAD
-            found = f'Hullo check it 😎 \n {output}'
-            return found
-        #otherwise let the people know you found nothing in a spunky fashion.
-        else:
-            nothing = 'I found nothing 😛'
-=======
             found = f'Hullo check it 😎🐱‍💻 \n {output}'
             return found
         #otherwise let the people know you found nothing in a spunky fashion.
         else:
             nothing = 'I found nothing 😛🐱‍💻'
->>>>>>> df819ba16bac35b73596ac39b66ed227b22c533b
             return nothing
         
 def main():
