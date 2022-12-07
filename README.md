@@ -1,6 +1,16 @@
 # steveyteabot
 Discord bot built with Python to fetch information inputted by users regarding headphones,  latest deals for online shopping, and wikipedia entries using APIs and Python libraries.
 
+File hierarchy:
+
+bot.py
+|_ utility.py
+|_ web_scanning.py
+|_ bot_interactions.py
+    |_ audiophile.py
+    |_ slickdeals.py
+
+
 Requirements:
 <br />
 requests==2.21.0 
