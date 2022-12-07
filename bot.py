@@ -1,8 +1,5 @@
 #bot.py
 #https://betterprogramming.pub/coding-a-discord-bot-with-python-64da9d6cade7
-#https://stackoverflow.com/questions/63403758/is-oop-possible-using-discord-py-without-cogs\
-#https://stackoverflow.com/questions/68583557/cogs-discord-py
-#https://gist.github.com/vbe0201/ade9b80f2d3b64643d854938d40a0a2d
 
 import discord
 import threading
