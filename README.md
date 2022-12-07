@@ -7,7 +7,7 @@ bot.py<br />
 |_ utility.py<br />
 |_ web_scanning.py<br />
 |_ bot_interactions.py<br />
-&emsp;|_ audiophile.py
+&emsp;|_ audiophile.py<br />
 &emsp;|_ slickdeals.py
 
 
