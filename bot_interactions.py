@@ -63,47 +63,38 @@ def wiki_message(message):
 
 def deals_message(message):
     item = message.content.lower().replace('!deals ', '')
-    #if bot is not the author try to take the item metioned through slickdeals module
-    try:
-        deal_search = slick.SlickSearch(message.content)
-        deal_search.crawl_search()
-        deal_search.gen_deals()
-        output = deal_search.display_deals()
-        #message out with deal informations
-        deal_results = f'{output["Product"][0]} Priced at: {output["Price"][0]}\n '\
-        f'{output["Link"][0]} \n'\
-        f'{output["Product"][1]} Priced at: {output["Price"][1]}\n '\
-        f'{output["Link"][1]} \n'\
-        f'{output["Link"][2]} \n'f'{output["Product"][2]} Priced at: {output["Price"][2]}\n '\
-        f'{output["Link"][2]} \n'\
-        f'{output["Product"][3]} Priced at: {output["Price"][3]}\n '\
-        f'{output["Link"][3]} \n'\
-        f'{output["Product"][4]} Priced at: {output["Price"][4]}\n '\
-        f'{output["Link"][4]} \n'
-        return f'Did someone say they needed a deal on {item}, Full Results: {deal_search.full_url()}? \n {deal_results}'
-    except AttributeError:
-        #attribute error is used on the off chance nothign appears for the search item.
+    outputls=[]
+    deal_search = slick.SlickSearch(message.content)
+    deal_search.crawl_search()
+    deal_search.gen_deals()
+    output = deal_search.display_deals()
+    if len(output) == 0:
         return f'sorry my guy, i couldn\'t find any deals for {item} 😕'
+    outputls.append(f'Did someone say they needed a deal on {item}, '\
+        f'Full Results: {deal_search.full_url()}? \n')
+    for row in output.index:
+        selected_row = list(output.iloc[row])
+        msg = f'{selected_row[0]} Priced at: {selected_row[1]}\n '\
+            f'{selected_row[2]} \n'
+        outputls.append(msg)
+    return ' '.join(outputls)
 
-def audio_message(message,gear = None, price = None, quant = None):
-    inputls = message.content.split(' ')
-    #list splicing to acocunt for the fact that users may not always specify None for input
+
+def audio_message(message:str):
+    inputls = message.content.lower().split(' ')[1:]
+    outputls = []
     try:
-        if len(inputls) == 3:
-            gear = inputls[1]
-            price = int(inputls[2])
-            quant = None
-        elif len(inputls) == 4:
-            gear = inputls[1]
-            price = int(inputls[2])
-            quant = int(inputls[3])
-        #based on length adjust input value accordingly and pass through AudiophileGear module
-        hardware_search = audiophile.AudiophileGear(gear,price,quant)
-        hardware_search.gear_search()
-        hardware_search.morph_search()
-        hardware_search.filter_search()
-        hardware_results = hardware_search.print_results()
-        #output with results
-        return hardware_results
-    except:
-        return
+        gear = inputls[0]
+        price = int(inputls[1])
+        recommendation_df = web_scanning.find_audiogear(price, gear)
+        if len(recommendation_df) == 0:
+            return 'I found nothing at that price point 😛🐱‍💻'
+        for row in recommendation_df.index:
+            selected_row = list(recommendation_df.iloc[row])
+            msg = (f"Priced at ${selected_row[2]}, {selected_row[1]} has a {selected_row[3]} "
+                f"sound signature with {selected_row[4]}. I\'d give this a {selected_row[0]}\n")
+            outputls.append(msg)
+        return ' '.join(outputls)
+    except (TypeError, ValueError):
+        return f'Uh oh I ran into an error, try doing the gear first and then the price 🐱‍💻'
+        

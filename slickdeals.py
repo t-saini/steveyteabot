@@ -45,7 +45,7 @@ class SlickSearch:
         for results in self.results:
             anchor = results.find('a', {'class': 'dealTitle'})
             self.deals['Product'].append(anchor['title'])
-            self.deals['Link'].append(self.slickdeals+anchor['href'])
+            self.deals['Link'].append(self.slickdeals[0:-1]+anchor['href'])
             self.deals['Price'].append(results.find('span',{'class':'price'}).getText().strip())
             rating = results.find('div', {'class': 'ratingNum'}).getText().strip()
             expired = 'Expired' if 'expired' in results['class'] else ''

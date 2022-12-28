@@ -4,7 +4,6 @@
 import discord
 import threading
 import time
-import datetime
 import bot_interactions
 import utility
 import web_scanning
@@ -23,40 +22,39 @@ def posh_check():
         time.sleep(1800)
         new_truth = web_scanning.find_posh()
         try:
-            if ground_truth != new_truth:
-                new_listings = list(set(new_truth).difference(set(ground_truth)))
-                dev_channel = bot.get_channel(int(setup['IMBREGAR']['channel_id']))
-                for listing in new_listings:
-                    bot.loop.create_task(dev_channel.send(f'{listing}'))
-                ground_truth = new_truth
+            for key in ground_truth:
+                if ground_truth[key] != new_truth[key]:
+                    new_listings = list(set(new_truth[key]).difference(set(ground_truth[key])))
+                    channel = bot.get_channel(int(setup['dev_server']['channel_id']))
+                    for listing in new_listings:
+                        time.sleep(1)
+                        bot.loop.create_task(channel.send(f'{listing}'))
+            ground_truth = new_truth
         except:
             dev_channel = int(setup['dev_server']['bot-logs'])
             bot.loop.create_task(dev_channel.send(f'Failed to check posh mart'))
 
 
 def dapper_check():
-    latest_article = []
+    latest_article = web_scanning.dapper_up()
     logger.info('Established Initial Ground Truth for Dappered')
     while True:
-        time.sleep(.001)
-        time_now = datetime.datetime.now().strftime("%H:%M")
-        time_to_work = ['09:15','12:30','15:30','18:30']
-        if time_now in time_to_work:
-            try:
-                current_article = web_scanning.dapper_up()
-                if current_article != latest_article:
-                    new_article = list(set(current_article).difference(set(latest_article)))
-                    channels_to_msg = [setup['dev_server']['channel_id'],
+        time.sleep(10800)
+        current_article = web_scanning.dapper_up()
+        try:
+            if current_article != latest_article:
+                new_article = list(set(current_article).difference(set(latest_article)))
+                channels_to_msg = [setup['dev_server']['channel_id'],
                     setup['DBR']['channel_id'], setup['IMBREGAR']['channel_id']]
-                    for single_channel in channels_to_msg:
-                        for article in new_article:
-                            dev_channel = bot.get_channel(int(single_channel))
-                            selected = utility.gen_random_int(bot_interactions.quips)
-                            bot.loop.create_task(dev_channel.send(f'{bot_interactions.quips[selected]}\n{article}'))
-                    latest_article = current_article
-            except:
-                dev_channel = setup['dev_server']['bot-logs']
-                dev_channel.send(f'Failed the dapper check')
+                for single_channel in channels_to_msg:
+                    for article in new_article:
+                        dev_channel = bot.get_channel(int(single_channel))
+                        selected = utility.gen_random_int(bot_interactions.quips)
+                        bot.loop.create_task(dev_channel.send(f'{bot_interactions.quips[selected]}\n{article}'))
+                latest_article = current_article
+        except:
+            dev_channel = setup['dev_server']['bot-logs']
+            dev_channel.send(f'Failed the dapper check')
 
 
 async def on_message(message):
@@ -88,6 +86,7 @@ async def on_message(message):
             f'The following error occured\n{error}\n'\
             f'Could not handle the following: {message.content.lower()} from: {message.author}'
             ))
+        bot.loop.create_task(message.channel.send('Oops, something wrong...letting the gremlins know...'))
     if output == None:
         return
     await message.channel.send(output)
