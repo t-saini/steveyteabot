@@ -39,22 +39,21 @@ Linux users may run into a Pandas error when trying to run the bot.
 Use case examples when the bot is a Discord Member:
 
 Finding deals on Klipsch Spekaers
-'''
+```
 !deals Klipsch Speakers
-'''
+```
 
 Finding deals on iems/headphones at no higher than $200 USD
-
-'''
+```
 !audio iems 200
-'''
+```
 
-'''
+```
 !audio headphones 200
-'''
+```
 
 Wikipedia seach
 
-'''
+```
 !wiki Godzilla
-'''
+```
