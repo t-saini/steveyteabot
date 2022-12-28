@@ -87,8 +87,6 @@ async def on_message(message):
             f'Could not handle the following: {message.content.lower()} from: {message.author}'
             ))
         bot.loop.create_task(message.channel.send('Oops, something wrong...letting the gremlins know...'))
-    if output == None:
-        return
     await message.channel.send(output)
 
 @bot.event
